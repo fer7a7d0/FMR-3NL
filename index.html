@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tres en Raya contra IA</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f0f0f0;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-gap: 5px;
+            margin-top: 20px;
+        }
+        .cell {
+            width: 100px;
+            height: 100px;
+            background-color: white;
+            border: 2px solid #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 40px;
+            cursor: pointer;
+        }
+        .cell:hover {
+            background-color: #e0e0e0;
+        }
+        #status {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+        #restart {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        #restart:hover {
+            background-color: #45a049;
+        }
+        #difficulty {
+            margin-top: 15px;
+            padding: 5px;
+            font-size: 16px;
+        }
+        #counters {
+            margin-top: 10px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tres en Raya contra IA</h1>
+
+    <!-- Contadores de victorias -->
+    <div id="counters">
+        Jugador: <span id="playerWins">0</span> | 
+        IA: <span id="aiWins">0</span> | 
+        Empates: <span id="draws">0</span>
+    </div>
+
+    <!-- Selector de dificultad -->
+    <label for="difficulty">Dificultad:</label>
+    <select id="difficulty">
+        <option value="easy">Fácil</option>
+        <option value="hard">Difícil</option>
+    </select>
+
+    <div id="status">Turno del jugador: X</div>
+    <div class="board" id="board">
+        <div class="cell" data-index="0"></div>
+        <div class="cell" data-index="1"></div>
+        <div class="cell" data-index="2"></div>
+        <div class="cell" data-index="3"></div>
+        <div class="cell" data-index="4"></div>
+        <div class="cell" data-index="5"></div>
+        <div class="cell" data-index="6"></div>
+        <div class="cell" data-index="7"></div>
+        <div class="cell" data-index="8"></div>
+    </div>
+    <button id="restart">Reiniciar Juego</button>
+
+    <script>
+        const board = document.getElementById('board');
+        const cells = document.querySelectorAll('.cell');
+        const status = document.getElementById('status');
+        const restartButton = document.getElementById('restart');
+        const difficultySelect = document.getElementById('difficulty');
+
+        // Contadores
+        const playerWinsEl = document.getElementById('playerWins');
+        const aiWinsEl = document.getElementById('aiWins');
+        const drawsEl = document.getElementById('draws');
+
+        let gameBoard = ['', '', '', '', '', '', '', '', ''];
+        let gameActive = true;
+
+        let playerWins = 0;
+        let aiWins = 0;
+        let draws = 0;
+
+        const winningCombinations = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8],
+            [0, 3, 6], [1, 4, 7], [2, 5, 8],
+            [0, 4, 8], [2, 4, 6]
+        ];
+
+        // Clic del jugador
+        cells.forEach(cell => {
+            cell.addEventListener('click', () => {
+                const index = cell.getAttribute('data-index');
+                if (gameBoard[index] === '' && gameActive) {
+                    makeMove(index, 'X');
+                    if (gameActive) {
+                        setTimeout(aiMove, 500);
+                    }
+                }
+            });
+        });
+
+        // Movimiento general
+        function makeMove(index, player) {
+            gameBoard[index] = player;
+            cells[index].textContent = player;
+
+            if (checkWin(player)) {
+                status.textContent = `¡${player === 'X' ? 'Jugador' : 'IA'} gana!`;
+                gameActive = false;
+                updateCounters(player);
+            } else if (gameBoard.every(cell => cell !== '')) {
+                status.textContent = '¡Empate!';
+                gameActive = false;
+                updateCounters('Draw');
+            } else {
+                status.textContent = `Turno del ${player === 'X' ? 'IA (O)' : 'Jugador (X)'}`;
+            }
+        }
+
+        // Actualizar contadores
+        function updateCounters(winner) {
+            if (winner === 'X') {
+                playerWins++;
+                playerWinsEl.textContent = playerWins;
+            } else if (winner === 'O') {
+                aiWins++;
+                aiWinsEl.textContent = aiWins;
+            } else {
+                draws++;
+                drawsEl.textContent = draws;
+            }
+        }
+
+        // IA según dificultad
+        function aiMove() {
+            const difficulty = difficultySelect.value;
+            if (difficulty === 'easy') {
+                easyAi();
+            } else {
+                hardAi();
+            }
+        }
+
+        function easyAi() {
+            let move = findBestMove('O');
+            if (move !== null) {
+                makeMove(move, 'O');
+                return;
+            }
+            move = findBestMove('X');
+            if (move !== null) {
+                makeMove(move, 'O');
+                return;
+            }
+            const emptyCells = gameBoard.reduce((acc, val, idx) => {
+                if (val === '') acc.push(idx);
+                return acc;
+            }, []);
+            if (emptyCells.length > 0) {
+                const randomIndex = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+                makeMove(randomIndex, 'O');
+            }
+        }
+
+        function hardAi() {
+            const bestMove = minimax(gameBoard, 'O').index;
+            makeMove(bestMove, 'O');
+        }
+
+        function minimax(newBoard, player) {
+            const emptyCells = newBoard.map((val, idx) => val === '' ? idx : null).filter(val => val !== null);
+
+            if (checkWinState(newBoard, 'X')) return { score: -10 };
+            if (checkWinState(newBoard, 'O')) return { score: 10 };
+            if (emptyCells.length === 0) return { score: 0 };
+
+            const moves = [];
+
+            for (let i = 0; i < emptyCells.length; i++) {
+                const move = {};
+                move.index = emptyCells[i];
+                newBoard[emptyCells[i]] = player;
+
+                if (player === 'O') {
+                    move.score = minimax(newBoard, 'X').score;
+                } else {
+                    move.score = minimax(newBoard, 'O').score;
+                }
+
+                newBoard[emptyCells[i]] = '';
+                moves.push(move);
+            }
+
+            let bestMove;
+            if (player === 'O') {
+                let bestScore = -Infinity;
+                for (let i = 0; i < moves.length; i++) {
+                    if (moves[i].score > bestScore) {
+                        bestScore = moves[i].score;
+                        bestMove = i;
+                    }
+                }
+            } else {
+                let bestScore = Infinity;
+                for (let i = 0; i < moves.length; i++) {
+                    if (moves[i].score < bestScore) {
+                        bestScore = moves[i].score;
+                        bestMove = i;
+                    }
+                }
+            }
+            return moves[bestMove];
+        }
+
+        function checkWinState(boardState, player) {
+            return winningCombinations.some(combination => {
+                return combination.every(index => boardState[index] === player);
+            });
+        }
+
+        function findBestMove(player) {
+            for (let combination of winningCombinations) {
+                const [a, b, c] = combination;
+                if (gameBoard[a] === player && gameBoard[b] === player && gameBoard[c] === '') return c;
+                if (gameBoard[a] === player && gameBoard[c] === player && gameBoard[b] === '') return b;
+                if (gameBoard[b] === player && gameBoard[c] === player && gameBoard[a] === '') return a;
+            }
+            return null;
+        }
+
+        function checkWin(player) {
+            return winningCombinations.some(combination => {
+                return combination.every(index => gameBoard[index] === player);
+            });
+        }
+
+        restartButton.addEventListener('click', () => {
+            gameBoard = ['', '', '', '', '', '', '', '', ''];
+            gameActive = true;
+            status.textContent = 'Turno del Jugador: X';
+            cells.forEach(cell => {
+                cell.textContent = '';
+            });
+        });
+    </script>
+</body>
+</html>
