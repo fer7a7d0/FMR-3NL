@@ -5,60 +5,105 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tres en Raya contra IA</title>
     <style>
+    body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: #f0f0f0;
+        color: #222;
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+    .board {
+        display: grid;
+        grid-template-columns: repeat(3, 100px);
+        grid-gap: 5px;
+        margin-top: 20px;
+    }
+
+    .cell {
+        width: 100px;
+        height: 100px;
+        background-color: white;
+        border: 2px solid #333;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 40px;
+        cursor: pointer;
+        transition: background-color 0.3s, border-color 0.3s;
+    }
+
+    .cell:hover {
+        background-color: #e0e0e0;
+    }
+
+    #status {
+        font-size: 24px;
+        margin-top: 20px;
+    }
+
+    #restart {
+        margin-top: 20px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+    }
+
+    #restart:hover {
+        background-color: #45a049;
+    }
+
+    #difficulty {
+        margin-top: 15px;
+        padding: 5px;
+        font-size: 16px;
+    }
+
+    #counters {
+        margin-top: 10px;
+        font-size: 20px;
+    }
+
+
+    /* MODO OSCURO AUTOMÁTICO SEGÚN EL SISTEMA OPERATIVO */
+    @media (prefers-color-scheme: dark) {
+
         body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background-color: #f0f0f0;
+            background-color: #121212;
+            color: #f5f5f5;
         }
-        .board {
-            display: grid;
-            grid-template-columns: repeat(3, 100px);
-            grid-gap: 5px;
-            margin-top: 20px;
-        }
+
         .cell {
-            width: 100px;
-            height: 100px;
-            background-color: white;
-            border: 2px solid #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 40px;
-            cursor: pointer;
+            background-color: #1e1e1e;
+            border-color: #888;
+            color: #ffffff;
         }
+
         .cell:hover {
-            background-color: #e0e0e0;
+            background-color: #333333;
         }
-        #status {
-            font-size: 24px;
-            margin-top: 20px;
-        }
+
         #restart {
-            margin-top: 20px;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
+            background-color: #2e7d32;
         }
+
         #restart:hover {
-            background-color: #45a049;
+            background-color: #1b5e20;
         }
-        #difficulty {
-            margin-top: 15px;
-            padding: 5px;
-            font-size: 16px;
+
+        select {
+            background-color: #1e1e1e;
+            color: white;
+            border: 1px solid #777;
         }
-        #counters {
-            margin-top: 10px;
-            font-size: 20px;
-        }
-    </style>
+    }
+</style>
 </head>
 <body>
     <h1>Tres en Raya contra IA</h1>
