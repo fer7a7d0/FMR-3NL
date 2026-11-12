@@ -1,322 +1,196 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tres en Raya contra IA</title>
-    <style>
-    body {
-        font-family: Arial, sans-serif;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        background-color: #f0f0f0;
-        color: #222;
-        transition: background-color 0.3s, color 0.3s;
-    }
-
-    .board {
-        display: grid;
-        grid-template-columns: repeat(3, 100px);
-        grid-gap: 5px;
-        margin-top: 20px;
-    }
-
-    .cell {
-        width: 100px;
-        height: 100px;
-        background-color: white;
-        border: 2px solid #333;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 40px;
-        cursor: pointer;
-        transition: background-color 0.3s, border-color 0.3s;
-    }
-
-    .cell:hover {
-        background-color: #e0e0e0;
-    }
-
-    #status {
-        font-size: 24px;
-        margin-top: 20px;
-    }
-
-    #restart {
-        margin-top: 20px;
-        padding: 10px 20px;
-        font-size: 16px;
-        cursor: pointer;
-        background-color: #4CAF50;
-        color: white;
-        border: none;
-        border-radius: 5px;
-    }
-
-    #restart:hover {
-        background-color: #45a049;
-    }
-
-    #difficulty {
-        margin-top: 15px;
-        padding: 5px;
-        font-size: 16px;
-    }
-
-    #counters {
-        margin-top: 10px;
-        font-size: 20px;
-    }
-
-
-    /* MODO OSCURO AUTOMÁTICO SEGÚN EL SISTEMA OPERATIVO */
-    @media (prefers-color-scheme: dark) {
-
-        body {
-            background-color: #121212;
-            color: #f5f5f5;
-        }
-
-        .cell {
-            background-color: #1e1e1e;
-            border-color: #888;
-            color: #ffffff;
-        }
-
-        .cell:hover {
-            background-color: #333333;
-        }
-
-        #restart {
-            background-color: #2e7d32;
-        }
-
-        #restart:hover {
-            background-color: #1b5e20;
-        }
-
-        select {
-            background-color: #1e1e1e;
-            color: white;
-            border: 1px solid #777;
-        }
-    }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f5f5f2">
+  <meta name="description" content="Una partida rápida de tres en raya contra la inteligencia artificial.">
+  <title>Tres en raya — juega una partida</title>
+  <link rel="stylesheet" href="/globals.css">
 </head>
 <body>
-    <h1>Tres en Raya contra IA</h1>
+  <main class="app-shell">
+    <header class="topbar">
+      <a class="wordmark" href="/" aria-label="Tres en raya, inicio"><span class="brand-mark" aria-hidden="true">tic</span> tres en raya</a>
+      <span class="topbar-note"><span class="online-dot" aria-hidden="true"></span> Juego local</span>
+    </header>
 
-    <!-- Contadores de victorias -->
-    <div id="counters">
-        Jugador: <span id="playerWins">0</span> | 
-        IA: <span id="aiWins">0</span> | 
-        Empates: <span id="draws">0</span>
-    </div>
+    <section class="game-layout" aria-labelledby="page-title">
+      <div class="intro">
+        <p class="eyebrow"><span>01</span> · CLÁSICO, SIN COMPLICACIONES</p>
+        <h1 id="page-title">Tu siguiente<br><span>movimiento.</span></h1>
+        <p class="intro-copy">Una partida rápida. Tú contra la máquina.</p>
+      </div>
 
-    <!-- Selector de dificultad -->
-    <label for="difficulty">Dificultad:</label>
-    <select id="difficulty">
-        <option value="easy">Fácil</option>
-        <option value="hard">Difícil</option>
-    </select>
+      <section class="game-panel" aria-label="Partida de tres en raya">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">PARTIDA ACTUAL</p>
+            <p id="status" class="status" aria-live="polite">Tu turno <span class="turn-symbol">×</span></p>
+          </div>
+          <label class="difficulty-label" for="difficulty">NIVEL
+            <select id="difficulty" aria-label="Nivel de dificultad">
+              <option value="easy">Fácil</option>
+              <option value="hard">Difícil</option>
+            </select>
+          </label>
+        </div>
 
-    <div id="status">Turno del jugador: X</div>
-    <div class="board" id="board">
-        <div class="cell" data-index="0"></div>
-        <div class="cell" data-index="1"></div>
-        <div class="cell" data-index="2"></div>
-        <div class="cell" data-index="3"></div>
-        <div class="cell" data-index="4"></div>
-        <div class="cell" data-index="5"></div>
-        <div class="cell" data-index="6"></div>
-        <div class="cell" data-index="7"></div>
-        <div class="cell" data-index="8"></div>
-    </div>
-    <button id="restart">Reiniciar Juego</button>
+        <div class="board" id="board" role="group" aria-label="Tablero de tres en raya">
+          <button class="cell" type="button" data-index="0" aria-label="Casilla 1, vacía"></button>
+          <button class="cell" type="button" data-index="1" aria-label="Casilla 2, vacía"></button>
+          <button class="cell" type="button" data-index="2" aria-label="Casilla 3, vacía"></button>
+          <button class="cell" type="button" data-index="3" aria-label="Casilla 4, vacía"></button>
+          <button class="cell" type="button" data-index="4" aria-label="Casilla 5, vacía"></button>
+          <button class="cell" type="button" data-index="5" aria-label="Casilla 6, vacía"></button>
+          <button class="cell" type="button" data-index="6" aria-label="Casilla 7, vacía"></button>
+          <button class="cell" type="button" data-index="7" aria-label="Casilla 8, vacía"></button>
+          <button class="cell" type="button" data-index="8" aria-label="Casilla 9, vacía"></button>
+        </div>
 
-    <script>
-        const board = document.getElementById('board');
-        const cells = document.querySelectorAll('.cell');
-        const status = document.getElementById('status');
-        const restartButton = document.getElementById('restart');
-        const difficultySelect = document.getElementById('difficulty');
+        <div class="panel-foot">
+          <p class="helper-text">Tú juegas con <strong>×</strong><span aria-hidden="true"> · </span>La máquina con <strong>○</strong></p>
+          <button id="restart" class="restart-button" type="button"><span aria-hidden="true">↻</span> Nueva partida</button>
+        </div>
+      </section>
 
-        // Contadores
-        const playerWinsEl = document.getElementById('playerWins');
-        const aiWinsEl = document.getElementById('aiWins');
-        const drawsEl = document.getElementById('draws');
+      <section class="score-section" aria-labelledby="score-title">
+        <div class="score-heading"><p class="eyebrow" id="score-title">MARCADOR</p><span class="score-caption">Esta sesión</span></div>
+        <div class="score-grid">
+          <article class="score-item"><span class="score-symbol player-symbol" aria-hidden="true">×</span><span class="score-name">Tú</span><strong id="playerWins">0</strong></article>
+          <article class="score-item"><span class="score-symbol ai-symbol" aria-hidden="true">○</span><span class="score-name">Máquina</span><strong id="aiWins">0</strong></article>
+          <article class="score-item"><span class="score-symbol draw-symbol" aria-hidden="true">＝</span><span class="score-name">Empates</span><strong id="draws">0</strong></article>
+        </div>
+      </section>
+    </section>
+    <footer class="footer"><span>Una pausa bien jugada.</span><span>© TRES EN RAYA</span></footer>
+  </main>
 
-        let gameBoard = ['', '', '', '', '', '', '', '', ''];
-        let gameActive = true;
+  <script>
+    const board = document.getElementById('board');
+    const cells = document.querySelectorAll('.cell');
+    const status = document.getElementById('status');
+    const restartButton = document.getElementById('restart');
+    const difficultySelect = document.getElementById('difficulty');
+    const playerWinsEl = document.getElementById('playerWins');
+    const aiWinsEl = document.getElementById('aiWins');
+    const drawsEl = document.getElementById('draws');
 
-        let playerWins = 0;
-        let aiWins = 0;
-        let draws = 0;
+    let gameBoard = ['', '', '', '', '', '', '', '', ''];
+    let gameActive = true;
+    let aiThinking = false;
+    let playerWins = 0;
+    let aiWins = 0;
+    let draws = 0;
 
-        const winningCombinations = [
-            [0, 1, 2], [3, 4, 5], [6, 7, 8],
-            [0, 3, 6], [1, 4, 7], [2, 5, 8],
-            [0, 4, 8], [2, 4, 6]
-        ];
+    const winningCombinations = [
+      [0, 1, 2], [3, 4, 5], [6, 7, 8],
+      [0, 3, 6], [1, 4, 7], [2, 5, 8],
+      [0, 4, 8], [2, 4, 6]
+    ];
 
-        // Clic del jugador
-        cells.forEach(cell => {
-            cell.addEventListener('click', () => {
-                const index = cell.getAttribute('data-index');
-                if (gameBoard[index] === '' && gameActive) {
-                    makeMove(index, 'X');
-                    if (gameActive) {
-                        setTimeout(aiMove, 500);
-                    }
-                }
-            });
-        });
-
-        // Movimiento general
-        function makeMove(index, player) {
-            gameBoard[index] = player;
-            cells[index].textContent = player;
-
-            if (checkWin(player)) {
-                status.textContent = `¡${player === 'X' ? 'Jugador' : 'IA'} gana!`;
-                gameActive = false;
-                updateCounters(player);
-            } else if (gameBoard.every(cell => cell !== '')) {
-                status.textContent = '¡Empate!';
-                gameActive = false;
-                updateCounters('Draw');
-            } else {
-                status.textContent = `Turno del ${player === 'X' ? 'IA (O)' : 'Jugador (X)'}`;
-            }
+    cells.forEach((cell) => {
+      cell.addEventListener('click', () => {
+        const index = Number(cell.dataset.index);
+        if (gameBoard[index] !== '' || !gameActive || aiThinking) return;
+        makeMove(index, 'X');
+        if (gameActive) {
+          aiThinking = true;
+          cells.forEach((button) => button.disabled = true);
+          status.textContent = 'La máquina está pensando…';
+          window.setTimeout(aiMove, 420);
         }
+      });
+    });
 
-        // Actualizar contadores
-        function updateCounters(winner) {
-            if (winner === 'X') {
-                playerWins++;
-                playerWinsEl.textContent = playerWins;
-            } else if (winner === 'O') {
-                aiWins++;
-                aiWinsEl.textContent = aiWins;
-            } else {
-                draws++;
-                drawsEl.textContent = draws;
-            }
-        }
+    function makeMove(index, player) {
+      gameBoard[index] = player;
+      const cell = cells[index];
+      cell.textContent = player === 'X' ? '×' : '○';
+      cell.classList.add(player === 'X' ? 'is-player' : 'is-ai');
+      cell.setAttribute('aria-label', `Casilla ${index + 1}, ${player === 'X' ? 'tuya' : 'de la máquina'}`);
 
-        // IA según dificultad
-        function aiMove() {
-            const difficulty = difficultySelect.value;
-            if (difficulty === 'easy') {
-                easyAi();
-            } else {
-                hardAi();
-            }
-        }
+      if (checkWin(player)) {
+        status.textContent = player === 'X' ? 'Has ganado.' : 'La máquina gana.';
+        gameActive = false;
+        updateCounters(player);
+        return;
+      }
+      if (gameBoard.every((value) => value !== '')) {
+        status.textContent = 'Empate. Buena partida.';
+        gameActive = false;
+        updateCounters('Draw');
+        return;
+      }
+      status.textContent = player === 'X' ? 'Turno de la máquina' : 'Tu turno';
+    }
 
-        function easyAi() {
-            let move = findBestMove('O');
-            if (move !== null) {
-                makeMove(move, 'O');
-                return;
-            }
-            move = findBestMove('X');
-            if (move !== null) {
-                makeMove(move, 'O');
-                return;
-            }
-            const emptyCells = gameBoard.reduce((acc, val, idx) => {
-                if (val === '') acc.push(idx);
-                return acc;
-            }, []);
-            if (emptyCells.length > 0) {
-                const randomIndex = emptyCells[Math.floor(Math.random() * emptyCells.length)];
-                makeMove(randomIndex, 'O');
-            }
-        }
+    function updateCounters(winner) {
+      if (winner === 'X') playerWinsEl.textContent = ++playerWins;
+      else if (winner === 'O') aiWinsEl.textContent = ++aiWins;
+      else drawsEl.textContent = ++draws;
+    }
 
-        function hardAi() {
-            const bestMove = minimax(gameBoard, 'O').index;
-            makeMove(bestMove, 'O');
-        }
+    function aiMove() {
+      if (!gameActive) return;
+      const move = difficultySelect.value === 'easy' ? getEasyMove() : minimax(gameBoard, 'O').index;
+      if (move !== undefined && move !== null) makeMove(move, 'O');
+      aiThinking = false;
+      cells.forEach((button, index) => button.disabled = !gameActive || gameBoard[index] !== '');
+    }
 
-        function minimax(newBoard, player) {
-            const emptyCells = newBoard.map((val, idx) => val === '' ? idx : null).filter(val => val !== null);
+    function getEasyMove() {
+      const winningMove = findBestMove('O');
+      if (winningMove !== null) return winningMove;
+      const blockingMove = findBestMove('X');
+      if (blockingMove !== null) return blockingMove;
+      const emptyCells = gameBoard.map((value, index) => value === '' ? index : null).filter((index) => index !== null);
+      return emptyCells[Math.floor(Math.random() * emptyCells.length)];
+    }
 
-            if (checkWinState(newBoard, 'X')) return { score: -10 };
-            if (checkWinState(newBoard, 'O')) return { score: 10 };
-            if (emptyCells.length === 0) return { score: 0 };
+    function minimax(state, player) {
+      const emptyCells = state.map((value, index) => value === '' ? index : null).filter((index) => index !== null);
+      if (checkWinState(state, 'X')) return { score: -10 };
+      if (checkWinState(state, 'O')) return { score: 10 };
+      if (emptyCells.length === 0) return { score: 0 };
+      const moves = emptyCells.map((index) => {
+        state[index] = player;
+        const score = minimax(state, player === 'O' ? 'X' : 'O').score;
+        state[index] = '';
+        return { index, score };
+      });
+      return moves.reduce((best, move) => player === 'O' ? (move.score > best.score ? move : best) : (move.score < best.score ? move : best));
+    }
 
-            const moves = [];
+    function checkWinState(state, player) {
+      return winningCombinations.some((combination) => combination.every((index) => state[index] === player));
+    }
 
-            for (let i = 0; i < emptyCells.length; i++) {
-                const move = {};
-                move.index = emptyCells[i];
-                newBoard[emptyCells[i]] = player;
+    function findBestMove(player) {
+      for (const [a, b, c] of winningCombinations) {
+        if (gameBoard[a] === player && gameBoard[b] === player && gameBoard[c] === '') return c;
+        if (gameBoard[a] === player && gameBoard[c] === player && gameBoard[b] === '') return b;
+        if (gameBoard[b] === player && gameBoard[c] === player && gameBoard[a] === '') return a;
+      }
+      return null;
+    }
 
-                if (player === 'O') {
-                    move.score = minimax(newBoard, 'X').score;
-                } else {
-                    move.score = minimax(newBoard, 'O').score;
-                }
+    function checkWin(player) {
+      return checkWinState(gameBoard, player);
+    }
 
-                newBoard[emptyCells[i]] = '';
-                moves.push(move);
-            }
-
-            let bestMove;
-            if (player === 'O') {
-                let bestScore = -Infinity;
-                for (let i = 0; i < moves.length; i++) {
-                    if (moves[i].score > bestScore) {
-                        bestScore = moves[i].score;
-                        bestMove = i;
-                    }
-                }
-            } else {
-                let bestScore = Infinity;
-                for (let i = 0; i < moves.length; i++) {
-                    if (moves[i].score < bestScore) {
-                        bestScore = moves[i].score;
-                        bestMove = i;
-                    }
-                }
-            }
-            return moves[bestMove];
-        }
-
-        function checkWinState(boardState, player) {
-            return winningCombinations.some(combination => {
-                return combination.every(index => boardState[index] === player);
-            });
-        }
-
-        function findBestMove(player) {
-            for (let combination of winningCombinations) {
-                const [a, b, c] = combination;
-                if (gameBoard[a] === player && gameBoard[b] === player && gameBoard[c] === '') return c;
-                if (gameBoard[a] === player && gameBoard[c] === player && gameBoard[b] === '') return b;
-                if (gameBoard[b] === player && gameBoard[c] === player && gameBoard[a] === '') return a;
-            }
-            return null;
-        }
-
-        function checkWin(player) {
-            return winningCombinations.some(combination => {
-                return combination.every(index => gameBoard[index] === player);
-            });
-        }
-
-        restartButton.addEventListener('click', () => {
-            gameBoard = ['', '', '', '', '', '', '', '', ''];
-            gameActive = true;
-            status.textContent = 'Turno del Jugador: X';
-            cells.forEach(cell => {
-                cell.textContent = '';
-            });
-        });
-    </script>
+    restartButton.addEventListener('click', () => {
+      gameBoard = ['', '', '', '', '', '', '', '', ''];
+      gameActive = true;
+      aiThinking = false;
+      status.textContent = 'Tu turno ×';
+      cells.forEach((cell, index) => {
+        cell.textContent = '';
+        cell.disabled = false;
+        cell.classList.remove('is-player', 'is-ai');
+        cell.setAttribute('aria-label', `Casilla ${index + 1}, vacía`);
+      });
+    });
+  </script>
 </body>
 </html>
