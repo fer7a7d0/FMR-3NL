@@ -79,6 +79,7 @@
     let gameBoard = ['', '', '', '', '', '', '', '', ''];
     let gameActive = true;
     let aiThinking = false;
+    let aiTimer;
     let playerWins = 0;
     let aiWins = 0;
     let draws = 0;
@@ -98,7 +99,7 @@
           aiThinking = true;
           cells.forEach((button) => button.disabled = true);
           status.textContent = 'La máquina está pensando…';
-          window.setTimeout(aiMove, 420);
+          aiTimer = window.setTimeout(aiMove, 420);
         }
       });
     });
@@ -180,6 +181,7 @@
     }
 
     restartButton.addEventListener('click', () => {
+      window.clearTimeout(aiTimer);
       gameBoard = ['', '', '', '', '', '', '', '', ''];
       gameActive = true;
       aiThinking = false;
