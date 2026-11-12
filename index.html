@@ -12,7 +12,13 @@
   <main class="app-shell">
     <header class="topbar">
       <a class="wordmark" href="/" aria-label="Tres en raya, inicio"><span class="brand-mark" aria-hidden="true">tic</span> tres en raya</a>
-      <span class="topbar-note"><span class="online-dot" aria-hidden="true"></span> Juego local</span>
+      <div class="topbar-actions">
+        <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Activar modo oscuro" aria-pressed="false" title="Activar modo oscuro">
+          <svg class="theme-icon theme-icon-moon" aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M20.2 15.3A8.5 8.5 0 0 1 8.7 3.8 8.5 8.5 0 1 0 20.2 15.3Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg class="theme-icon theme-icon-sun" aria-hidden="true" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.7"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        </button>
+        <span class="topbar-note"><span class="online-dot" aria-hidden="true"></span> Juego local</span>
+      </div>
     </header>
 
     <section class="game-layout" aria-labelledby="page-title">
@@ -75,6 +81,22 @@
     const playerWinsEl = document.getElementById('playerWins');
     const aiWinsEl = document.getElementById('aiWins');
     const drawsEl = document.getElementById('draws');
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeColor = document.querySelector('meta[name="theme-color"]');
+
+    function setTheme(isDark) {
+      document.documentElement.dataset.theme = isDark ? 'dark' : 'light';
+      themeToggle.setAttribute('aria-pressed', String(isDark));
+      const action = isDark ? 'Activar modo claro' : 'Activar modo oscuro';
+      themeToggle.setAttribute('aria-label', action);
+      themeToggle.title = action;
+      themeColor.content = isDark ? '#141512' : '#f5f5f2';
+    }
+
+    setTheme(window.matchMedia('(prefers-color-scheme: dark)').matches);
+    themeToggle.addEventListener('click', () => {
+      setTheme(document.documentElement.dataset.theme !== 'dark');
+    });
 
     let gameBoard = ['', '', '', '', '', '', '', '', ''];
     let gameActive = true;
